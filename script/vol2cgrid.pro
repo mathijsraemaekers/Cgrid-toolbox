@@ -1,0 +1,104 @@
+pro vol2cgrid,niifiles,cgridfiles,flag=flag,mval=mval
+syntx=n_params()
+if syntx lt 2 then begin
+print,'Usage:'
+print,'The nifi files to convert'
+print,'The cgridfile'
+print,'Set keyword flag to use different mapping options of mri_vol2surf'
+print,'Set keyword mval to fill in missing data points in the CGRID'
+return
+end
+if not keyword_set(flag) then flag='--projfrac 0.5'
+flag=' '+flag
+spawn,'echo $SUBJECTS_DIR',fsdir
+hems=['lh','rh']
+subcode=replace(replace(file_dirname(cgridfiles(0)),fsdir+'/',''),'/surf','')
+patchcode=replace(replace(replace(file_basename(cgridfiles(0)),'.cgrid',''),'lh_',''),'rh_','')
+surfdir=fsdir+'/'+subcode+'/surf/'
+regfile=surfdir+'register_'+trim(randomu(a,/long))+'.dat'
+nrniifiles=n_elements(niifiles)
+nrcgridfiles=n_elements(cgridfiles)
+tmpcgriddat=read_ascii(cgridfiles(0))
+tmpcgriddat=tmpcgriddat.(0)
+xdim=max(tmpcgriddat(1,*))
+ydim=max(tmpcgriddat(2,*))
+cgrids=create_struct(patchcode+'_'+trim(1),tmpcgriddat)
+if nrcgridfiles gt 1 then for i=1,nrcgridfiles-1 do begin
+tmpcgriddat=read_ascii(cgridfiles(i))
+tmpcgriddat=tmpcgriddat.(0)
+tmpxdim=max(tmpcgriddat(1,*))
+tmpydim=max(tmpcgriddat(2,*))
+if tmpxdim gt xdim then xdim=tmpxdim
+if tmpydim gt ydim then ydim=tmpydim
+cgrids=create_struct(cgrids,patchcode+'_'+trim(i+1),tmpcgriddat)
+end
+if keyword_set(mval) then begin
+mvals=fltarr(xdim,ydim,2)+1
+for j=0,nrcgridfiles-1 do begin 
+hem=strmid(file_basename(cgridfiles(j)),0,2)
+sind=where(hems eq hem)
+cgrid=cgrids.(j)
+for k=0,xdim-1 do for l=0,ydim-1 do if where(cgrid(1,*) eq k+1 and cgrid(2,*) eq l+1,/NULL) eq !NULL then mvals(k,l,sind)=0
+end
+end
+areas=create_struct('lh',read_fs_surfdat(surfdir+'lh.area.mid'))
+areas=create_struct(areas,'rh',read_fs_surfdat(surfdir+'rh.area.mid'))
+for i=0,nrniifiles-1 do begin
+spawn,'tkregister2 --mov '+niifiles(i)+' --s '+subcode+' --regheader --noedit --reg '+regfile
+for j=0,nrcgridfiles-1 do begin
+hem=strmid(file_basename(cgridfiles(j)),0,2)
+sind=where(hems eq hem)
+area=areas.(sind)
+cgrid=cgrids.(j)
+print,'Start mapping '+niifiles(i)+' to '+hem+' surface'
+spawn,'mri_vol2surf --src '+niifiles(i)+' --srcreg '+regfile+' --hemi '+hem+' --out '+surfdir+hem+'_'+patchcode+'_tmp.mgh'+flag
+print,'Done'
+readmgh,surfdir+hem+'_'+patchcode+'_tmp.mgh',surfdat
+spawn,'rm '+surfdir+hem+'_'+patchcode+'_tmp.mgh'
+nrscans=n_elements(surfdat(0,0,0,*))
+surfdat=reform(surfdat,n_elements(surfdat(*,0,0,0)),nrscans)
+if j eq 0 then opdat=fltarr(xdim,ydim,2,nrscans)
+for k=0,nrscans-1 do surfdat(*,k)=surfdat(*,k)*area
+for k=0,xdim-1 do for l=0,ydim-1 do begin
+inc=where(cgrid(1,*) eq k+1 and cgrid(2,*) eq l+1,/NULL)
+if inc ne !NULL then opdat(k,l,sind,*)=total(surfdat(cgrid(0,inc),*),1)/total(area((cgrid(0,inc))))
+end
+end
+if keyword_set(mval) then begin
+if nrscans eq 1 then begin
+shifts=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0]]
+dim=4 
+end else begin
+shifts=[[1,0,0,0],[-1,0,0,0],[0,1,0,0],[0,-1,0,0]]
+dim=5
+end
+tmpmvals=fltarr(xdim+2,ydim+2,2)+!VALUES.F_NAN
+tmpmvals(1:xdim,1:ydim,*)=mvals
+tmpdat=fltarr(xdim+2,ydim+2,2,nrscans)
+tmpdat(1:xdim,1:ydim,*,*)=opdat
+if nrscans gt 1 then tmpmvals=rebin(tmpmvals,xdim+2,ydim+2,2,nrscans,/sample)
+ztest=where(tmpmvals eq 0,/NULL)
+while ztest ne !NULL do begin
+addat=fltarr(xdim+2,ydim+2,2,nrscans,4)
+for k=0,3 do addat(*,*,*,*,k)=shift(tmpdat,reform(shifts(*,k)))
+addat=mean(addat,dimension=dim,/NAN)
+admvals=fltarr(xdim+2,ydim+2,2,nrscans,4)
+for k=0,3 do admvals(*,*,*,*,k)=shift(tmpmvals,reform(shifts(*,k)))
+admvals=mean(admvals,dimension=dim,/NAN)
+fills=where(tmpmvals eq 0 and admvals ne 0)
+tmpdat(fills)=addat(fills)
+tmpmvals(fills)=1
+ztest=where(tmpmvals eq 0,/NULL)
+end
+opdat=tmpdat(1:xdim,1:ydim,*,*)
+end
+spawn,'rm '+regfile
+outputfile=file_basename(niifiles(i))
+dtest=strpos(outputfile,'-')
+if dtest ne -1 then outputfile=strmid(outputfile,0,dtest)+'_cgrid_'+patchcode+strmid(outputfile,dtest,strlen(outputfile)) else outputfile=replace(outputfile,'.nii','')+'_cgrid_'+patchcode+'.nii'
+wrfile=file_dirname(niifiles(i))+'/'+outputfile
+print,'Writing '+wrfile
+niihdrtool,wrfile,fdata=opdat,srow_x4=-xdim/2.+0.5,srow_y4=-ydim/2.+0.5,srow_z4=-0.5
+print,'Done'
+end
+end
