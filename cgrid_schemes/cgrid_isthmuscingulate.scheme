@@ -1,0 +1,25 @@
+Number of subgrids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+isthmuscingulate
+x-dimension:
+42
+y-dimension(s):
+21
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+subgrid-1 upper border:
+ISTHMUSCINGULATE_PRECUNEUS
+subgrid-1 lower border:
+UNKNOWN_ISTHMUSCINGULATE
+ISTHMUSCINGULATE_PARAHIPPOCAMPAL
+subgrid-1 left border:
+ISTHMUSCINGULATE_LINGUAL
+subgrid-1 right border:
+ISTHMUSCINGULATE_POSTERIORCINGULATE

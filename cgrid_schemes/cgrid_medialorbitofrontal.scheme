@@ -1,0 +1,26 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+medialorbitofrontal
+x-dimension:
+60
+y-dimension(s):
+30
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+MEDIALORBITOFRONTAL_ROSTRALANTERIORCINGULATE
+CGRID-1 lower border:
+LATERALORBITOFRONTAL_MEDIALORBITOFRONTAL
+MEDIALORBITOFRONTAL_INSULA
+MEDIALORBITOFRONTAL_FRONTALPOLE
+CGRID-1 left border:
+UNKNOWN_MEDIALORBITOFRONTAL
+CGRID-1 right border:
+MEDIALORBITOFRONTAL_SUPERIORFRONTAL

@@ -1,0 +1,29 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+parahippicampal,entorhinal
+x-dimension:
+45
+y-dimension(s):
+15
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+UNKNOWN_ENTORHINAL
+UNKNOWN_PARAHIPPOCAMPAL
+ENTORHINAL_INSULA
+CGRID-1 lower border:
+ENTORHINAL_FUSIFORM
+FUSIFORM_PARAHIPPOCAMPAL
+LINGUAL_PARAHIPPOCAMPAL
+CGRID-1 left border:
+ISTHMUSCINGULATE_PARAHIPPOCAMPAL
+CGRID-1 right border:
+ENTORHINAL_TEMPORALPOLE
+ENTORHINAL_SUPERIORTEMPORAL

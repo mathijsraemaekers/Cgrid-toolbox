@@ -1,0 +1,35 @@
+Number of grids:
+2
+Annotation scheme:
+aparc
+ROIs to include:
+precentral,postcentral
+x-dimension:
+80
+y-dimension(s):
+20
+Polynomial order:
+0
+Invert x-axis:
+yes
+Transpose axes:
+yes
+CGRID-1 upper border:
+POSTCENTRAL_PRECENTRAL
+CGRID-1 lower border:
+CAUDALMIDDLEFRONTAL_PRECENTRAL
+PARSOPERCULARIS_PRECENTRAL
+PRECENTRAL_SUPERIORFRONTAL
+CGRID-1 left border:
+PARACENTRAL_PRECENTRAL
+CGRID-1 right border:
+PRECENTRAL_INSULA
+CGRID-2 upper border:
+POSTCENTRAL_SUPERIORPARIETAL
+POSTCENTRAL_SUPRAMARGINAL
+CGRID-2 lower border:
+POSTCENTRAL_PRECENTRAL
+CGRID-2 left border:
+PARACENTRAL_POSTCENTRAL
+CGRID-2 right border:
+POSTCENTRAL_INSULA

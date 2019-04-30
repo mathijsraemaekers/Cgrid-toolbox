@@ -1,0 +1,49 @@
+Number of grids:
+3
+Annotation scheme:
+aparc
+ROIs to include:
+fusiform,inferiortemporal,middletemporal,superiortemporal,transversetemporal,bankssts
+x-dimension:
+96
+y-dimension(s):
+24 24 72
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+subgrid-1 upper border:
+FUSIFORM_INFERIORTEMPORAL
+subgrid-1 lower border:
+ENTORHINAL_FUSIFORM
+FUSIFORM_LINGUAL
+FUSIFORM_PARAHIPPOCAMPAL
+subgrid-1 left border:
+FUSIFORM_TEMPORALPOLE
+subgrid-1 right border:
+FUSIFORM_LATERALOCCIPITAL
+subgrid-2 upper border:
+INFERIORTEMPORAL_MIDDLETEMPORAL
+subgrid-2 lower border:
+FUSIFORM_INFERIORTEMPORAL
+subgrid-2 left border:
+INFERIORTEMPORAL_TEMPORALPOLE
+subgrid-2 right border:
+INFERIORTEMPORAL_LATERALOCCIPITAL
+subgrid-3 upper border:
+SUPERIORTEMPORAL_INSULA
+TRANSVERSETEMPORAL_INSULA
+SUPRAMARGINAL_TRANSVERSETEMPORAL
+subgrid-3 lower border:
+INFERIORTEMPORAL_MIDDLETEMPORAL
+subgrid-3 left border:
+MIDDLETEMPORAL_TEMPORALPOLE
+SUPERIORTEMPORAL_TEMPORALPOLE
+subgrid-3 right border:
+BANKSSTS_SUPRAMARGINAL
+INFERIORPARIETAL_MIDDLETEMPORAL
+LATERALOCCIPITAL_MIDDLETEMPORAL
+BANKSSTS_INFERIORPARIETAL
+SUPERIORTEMPORAL_SUPRAMARGINAL

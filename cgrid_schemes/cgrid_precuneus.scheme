@@ -1,0 +1,27 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+precuneus
+x-dimension:
+60
+y-dimension(s):
+30
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+PRECUNEUS_SUPERIORPARIETAL
+CGRID-1 lower border:
+ISTHMUSCINGULATE_PRECUNEUS
+LINGUAL_PRECUNEUS
+POSTERIORCINGULATE_PRECUNEUS
+CGRID-1 left border:
+CUNEUS_PRECUNEUS
+PERICALCARINE_PRECUNEUS
+CGRID-1 right border:
+PARACENTRAL_PRECUNEUS

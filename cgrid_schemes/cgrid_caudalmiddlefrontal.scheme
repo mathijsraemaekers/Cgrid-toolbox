@@ -1,0 +1,24 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+caudalmiddlefrontal
+x-dimension:
+30
+y-dimension(s):
+30
+Polynomial order:
+0
+Invert x-axis:
+yes
+Transpose axes:
+yes
+CGRID-1 upper border:
+CAUDALMIDDLEFRONTAL_PRECENTRAL
+CGRID-1 lower border:
+CAUDALMIDDLEFRONTAL_ROSTRALMIDDLEFRONTAL
+CGRID-1 left border:
+CAUDALMIDDLEFRONTAL_SUPERIORFRONTAL
+CGRID-1 right border:
+CAUDALMIDDLEFRONTAL_PARSOPERCULARIS

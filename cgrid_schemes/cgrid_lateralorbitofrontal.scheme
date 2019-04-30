@@ -1,0 +1,27 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+lateralorbitofrontal
+x-dimension:
+30
+y-dimension(s):
+15
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+LATERALORBITOFRONTAL_PARSORBITALIS
+LATERALORBITOFRONTAL_PARSTRIANGULARIS
+CGRID-1 lower border:
+LATERALORBITOFRONTAL_MEDIALORBITOFRONTAL
+CGRID-1 left border:
+LATERALORBITOFRONTAL_ROSTRALMIDDLEFRONTAL
+LATERALORBITOFRONTAL_FRONTALPOLE
+CGRID-1 right border:
+LATERALORBITOFRONTAL_INSULA
+UNKNOWN_LATERALORBITOFRONTAL

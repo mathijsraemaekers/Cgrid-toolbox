@@ -1,0 +1,42 @@
+Number of grids:
+3
+Annotation scheme:
+aparc
+ROIs to include:
+cuneus,pericalcarine,lingual
+x-dimension:
+60
+y-dimension(s):
+30 15 15
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+LINGUAL_PERICALCARINE
+CGRID-1 lower border:
+FUSIFORM_LINGUAL
+CGRID-1 left border:
+LATERALOCCIPITAL_LINGUAL
+CGRID-1 right border:
+ISTHMUSCINGULATE_LINGUAL
+LINGUAL_PARAHIPPOCAMPAL
+LINGUAL_PRECUNEUS
+CGRID-2 upper border:
+CUNEUS_PERICALCARINE
+CGRID-2 lower border:
+LINGUAL_PERICALCARINE
+CGRID-2 left border:
+LATERALOCCIPITAL_PERICALCARINE
+CGRID-2 right border:
+PERICALCARINE_PRECUNEUS
+CGRID-3 upper border:
+CUNEUS_SUPERIORPARIETAL
+CGRID-3 lower border:
+CUNEUS_PERICALCARINE
+CGRID-3 left border:
+CUNEUS_LATERALOCCIPITAL
+CGRID-3 right border:
+CUNEUS_PRECUNEUS

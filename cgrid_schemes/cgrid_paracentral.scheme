@@ -1,0 +1,26 @@
+Number of grids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+paracentral
+x-dimension:
+36
+y-dimension(s):
+36
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+CGRID-1 upper border:
+PARACENTRAL_POSTCENTRAL
+PARACENTRAL_PRECENTRAL
+CGRID-1 lower border:
+PARACENTRAL_POSTERIORCINGULATE
+CGRID-1 left border:
+PARACENTRAL_PRECUNEUS
+PARACENTRAL_SUPERIORPARIETAL
+CGRID-1 right border:
+PARACENTRAL_SUPERIORFRONTAL
