@@ -1,5 +1,3 @@
 # Cgrid-toolbox
 Graphical toolbox for generating Cgrids
-
-![GitHub Logo](/images/tekst_logo.tif)
-Format: ![Alt Text](url)
+![Alt text](/images/tekst_logo.tif?raw=true "Optional Title")
