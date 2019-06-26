@@ -16,6 +16,7 @@ tpnames=reform(tpnames(1,*))
 paint=reform(paint(1,*))
 surf=read_fs_surface(surfdir+hem+'.inflated')
 tpnames=replace(tpnames,'-','_')
+tpnames=replace(tpnames,'&','_and_')
 topo=surf.TOPOLOGY
 if keyword_set(patchfile) then begin 
 patch=read_fs_patch(patchfile)

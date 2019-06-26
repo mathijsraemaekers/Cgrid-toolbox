@@ -143,26 +143,13 @@ if i ge 6 then opdat(k,l,sind)=mean(surfdat(cgrid(0,inc)))
 end
 end
 end
-if mval(0) eq 1 then if i lt 6 then begin
-tmpdat=fltarr(xdim+2,ydim+2,2)+!VALUES.F_NAN
-tmpdat(1:xdim,1:ydim,*)=opdat
-ztest=where(tmpdat eq 0,/NULL)
-while ztest ne !NULL do begin
-nrbl=n_elements(ztest)
-fillvals=fltarr(nrbl)
-cors=array_indices(tmpdat,ztest)
-for k=0,nrbl-1 do begin 
-incvals=tmpdat([cors(0,k)-1,cors(0,k)+1,cors(0,k),cors(0,k)],[cors(1,k),cors(1,k),cors(1,k)-1,cors(1,k)+1],intarr(4)+cors(2,k))
-inctest=where(incvals ne 0,/NULL)
-if inctest ne !NULL then begin
-incvals=incvals(inctest)
-fillvals(k)=mean(incvals,/NAN)
-end
-end
-tmpdat(ztest(where(fillvals ne 0)))=fillvals(where(fillvals ne 0))
-ztest=where(tmpdat eq 0,/NULL)
-end
-opdat=tmpdat(1:xdim,1:ydim,*)
+if mval(0) eq 1 then if i lt 6 then for l=0,1 do begin
+tmpdat=reform(opdat(*,*,l))
+ztiles=where(nrverts(*,*,l) eq 0)
+tmpdat(ztiles)=!VALUES.F_NAN
+smtmpdat=gauss_smooth(tmpdat,0.5,/NAN,/edge_truncate,/normalize)
+tmpdat(ztiles)=smtmpdat(ztiles)
+opdat(*,*,l)=tmpdat
 end
 if i ge 6 then opdat=opdat*nrverts
 print,'Writing file '+ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(i)+'.nii'

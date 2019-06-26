@@ -64,33 +64,15 @@ inc=where(cgrid(1,*) eq k+1 and cgrid(2,*) eq l+1,/NULL)
 if inc ne !NULL then opdat(k,l,sind,*)=total(surfdat(cgrid(0,inc),*),1)/total(area((cgrid(0,inc))))
 end
 end
-if keyword_set(mval) then begin
-if nrscans eq 1 then begin
-shifts=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0]]
-dim=4 
-end else begin
-shifts=[[1,0,0,0],[-1,0,0,0],[0,1,0,0],[0,-1,0,0]]
-dim=5
+if keyword_set(mval) then for l=0,1 do begin
+tmpinc=where(mvals(*,*,l) eq 0,/NULL)
+if tmpinc ne !NULL then for k=0,nrscans-1 do begin
+tmpdat=opdat(*,*,l,k)
+tmpdat(tmpinc)=!VALUES.F_NAN
+smtmpdat=gauss_smooth(tmpdat,0.5,/NAN,/edge_truncate,/normalize)
+tmpdat(tmpinc)=smtmpdat(tmpinc)
+opdat(*,*,l,k)=tmpdat
 end
-tmpmvals=fltarr(xdim+2,ydim+2,2)+!VALUES.F_NAN
-tmpmvals(1:xdim,1:ydim,*)=mvals
-tmpdat=fltarr(xdim+2,ydim+2,2,nrscans)
-tmpdat(1:xdim,1:ydim,*,*)=opdat
-if nrscans gt 1 then tmpmvals=rebin(tmpmvals,xdim+2,ydim+2,2,nrscans,/sample)
-ztest=where(tmpmvals eq 0,/NULL)
-while ztest ne !NULL do begin
-addat=fltarr(xdim+2,ydim+2,2,nrscans,4)
-for k=0,3 do addat(*,*,*,*,k)=shift(tmpdat,reform(shifts(*,k)))
-addat=mean(addat,dimension=dim,/NAN)
-admvals=fltarr(xdim+2,ydim+2,2,nrscans,4)
-for k=0,3 do admvals(*,*,*,*,k)=shift(tmpmvals,reform(shifts(*,k)))
-admvals=mean(admvals,dimension=dim,/NAN)
-fills=where(tmpmvals eq 0 and admvals ne 0)
-tmpdat(fills)=addat(fills)
-tmpmvals(fills)=1
-ztest=where(tmpmvals eq 0,/NULL)
-end
-opdat=tmpdat(1:xdim,1:ydim,*,*)
 end
 spawn,'rm '+regfile
 outputfile=file_basename(niifiles(i))

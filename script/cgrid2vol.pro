@@ -37,7 +37,7 @@ for j=0,xdim-1 do begin
 tmpdat=cgrid(0,where(cgrid(1,*) eq j+1))
 tmpcoor=n_elements(tmpdat)
 tmpdat=transpose(['#!ascii label',trim(tmpcoor),reform(trim(long(tmpdat))+'  '+coords(1,*)+'  '+coords(2,*)+'  '+coords(3,*)+'  '+strcompress(string(fltarr(tmpcoor)),/remove_all))])
-labelfile=labeldir+hem+'.cgrid_'+patchcode+'_x'+trim(j+1)+'.label'
+labelfile=labeldir+hem+'.cgrid_'+patchcode+'_x'+string(j+1,FORMAT='(I04)')+'.label'
 write_ascii,labelfile,tmpdat
 label2volxc=label2volxc+' --label '+labelfile
 labelfiles=[labelfiles,labelfile]
@@ -46,7 +46,7 @@ for j=0,ydim-1 do begin
 tmpdat=cgrid(0,where(cgrid(2,*) eq j+1))
 tmpcoor=n_elements(tmpdat)
 tmpdat=transpose(['#!ascii label',trim(tmpcoor),reform(trim(long(tmpdat))+'  '+coords(1,*)+'  '+coords(2,*)+'  '+coords(3,*)+'  '+strcompress(string(fltarr(tmpcoor)),/remove_all))])
-labelfile=labeldir+hem+'.cgrid_'+patchcode+'_y'+trim(j+1)+'.label'
+labelfile=labeldir+hem+'.cgrid_'+patchcode+'_y'+string(j+1,FORMAT='(I04)')+'.label'
 write_ascii,labelfile,tmpdat
 label2volyc=label2volyc+' --label '+labelfile
 labelfiles=[labelfiles,labelfile]
