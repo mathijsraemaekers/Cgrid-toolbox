@@ -1,0 +1,32 @@
+Number of subgrids:
+1
+Annotation scheme:
+aparc
+ROIs to include:
+cuneus,lateraloccipital,lingual,pericalcarine
+x-dimension:
+100
+y-dimension(s):
+100
+Polynomial order:
+0
+Invert x-axis:
+no
+Transpose axes:
+no
+subgrid-1 upper border:
+CUNEUS_SUPERIORPARIETAL
+LATERALOCCIPITAL_SUPERIORPARIETAL
+subgrid-1 lower border:
+FUSIFORM_LATERALOCCIPITAL
+FUSIFORM_LINGUAL
+subgrid-1 left border:
+INFERIORPARIETAL_LATERALOCCIPITAL
+INFERIORTEMPORAL_LATERALOCCIPITAL
+LATERALOCCIPITAL_MIDDLETEMPORAL
+subgrid-1 right border:
+CUNEUS_PRECUNEUS
+ISTHMUSCINGULATE_LINGUAL
+LINGUAL_PARAHIPPOCAMPAL
+LINGUAL_PRECUNEUS
+PERICALCARINE_PRECUNEUS
