@@ -1,4 +1,4 @@
-pro vol2cgrid_widget
+pro mgh2cgrid_widget
 spawn,'echo $SUBJECTS_DIR',fsdir
 spawn,'pwd',curdir
 cgridfiles=''
@@ -22,128 +22,19 @@ end
 end
 print,'Selected Cgrid-files are:'
 print,transpose(cgridfiles)
-enc=0
+mval=0
 nrgrids=n_elements(cgridfiles)
 subcode=replace(replace(file_dirname(cgridfiles(0)),fsdir+'/',''),'/surf','')
-base=widget_base(/row,title='Select mapping algorithm',xsize=250)
-proceed=widget_button(base,value='Proceed')
-methods=['projfrac','projfrac-avg','projfrac-max','projdist','projdist-avg','projdist-max']
-mapsel=cw_bgroup(base,methods,/column,/exclusive,label_top='Mapping Algorithm',set_value=0)
-quit=widget_button(base,value='Quit')
-resp=widget_event(base,/nowait)
-widget_control,base,/realize
-method=0
-val2=''
-val3=''
-while resp.id ne proceed do begin
-resp=widget_event(base)
-if resp.id eq mapsel then method=resp.value
-if resp.id eq quit then begin
-widget_control,base,/destroy
-return
-end
-end
-widget_control,base,/destroy
-if method eq 0 then begin
-val1=' '+trim(0.5)
-base=widget_base(/row,title='Provide algorithm details')
-proceed=widget_button(base,value='Proceed')
-a=cw_field(base,title='Fraction',/all_events,/float,value=0.5)
-quit=widget_button(base,value='Quit')
-resp=widget_event(base,/nowait)
-widget_control,base,/realize
-while resp.id ne proceed do begin
-resp=widget_event(base)
-if resp.id eq a then val1=trim(resp.value)
-if resp.id eq quit then begin
-widget_control,base,/destroy
-return
-end
-end
-widget_control,base,/destroy
-end
-if method eq 1 or method eq 2 then begin
-val1=trim(0.0)
-val2=' '+trim(1.0)
-val3=' '+trim(0.1)
-base=widget_base(/row,title='Provide algorithm details')
-proceed=widget_button(base,value='Proceed')
-a=cw_field(base,title='Min frac',/all_events,/float,value=0.0)
-b=cw_field(base,title='Max frac',/all_events,/float,value=1.0)
-c=cw_field(base,title='Stepsize',/all_events,/float,value=0.1)
-quit=widget_button(base,value='Quit')
-resp=widget_event(base,/nowait)
-widget_control,base,/realize
-while resp.id ne proceed or float(trim(val3)) le 0 do begin
-resp=widget_event(base)
-if resp.id eq a then val1=trim(resp.value)
-if resp.id eq b then val2=' '+trim(resp.value)
-if resp.id eq c then val3=' '+trim(resp.value)
-if resp.id eq proceed then if float(trim(val3)) le 0 then print,'The stepsize should be bigger than 0.'
-if resp.id eq quit then begin
-widget_control,base,/destroy
-return
-end
-end
-widget_control,base,/destroy
-end
-if method eq 3 then begin
-val1=trim(1.5)
-base=widget_base(/row,title='Provide algorithm details')
-proceed=widget_button(base,value='Proceed')
-a=cw_field(base,title='Distance(mm)',/all_events,/float,value=1.5)
-quit=widget_button(base,value='Quit')
-resp=widget_event(base,/nowait)
-widget_control,base,/realize
-while resp.id ne proceed do begin
-resp=widget_event(base)
-if resp.id eq a then val1=trim(resp.value)
-if resp.id eq quit then begin
-widget_control,base,/destroy
-return
-end
-end
-widget_control,base,/destroy
-end
-if method eq 4 or method eq 5 then begin
-val1=trim(0.0)
-val2=' '+trim(3.0)
-val3=' '+trim(10)
-base=widget_base(/row,title='Provide algorithm details')
-proceed=widget_button(base,value='Proceed')
-a=cw_field(base,title='Min dist(mm)',/all_events,/float,value=0.0)
-b=cw_field(base,title='Max dist(mm)',/all_events,/float,value=3.0)
-c=cw_field(base,title='Stepsize(mm)',/all_events,/integer,value=0.3)
-quit=widget_button(base,value='Quit')
-resp=widget_event(base,/nowait)
-widget_control,base,/realize
-while resp.id ne proceed or float(trim(val3)) le 0 do begin
-resp=widget_event(base)
-if resp.id eq a then val1=trim(resp.value)
-if resp.id eq b then val2=' '+trim(resp.value)
-if resp.id eq c then val3=' '+trim(resp.value)
-if resp.id eq proceed then if float(trim(val3)) le 0 then print,'The stepsize should be bigger than 0.'
-if resp.id eq quit then begin
-widget_control,base,/destroy
-return
-end
-end
-widget_control,base,/destroy
-end
-sk=6.
 base=widget_base(/row,title='Additional settings for mapping')
 proceed=widget_button(base,value='Proceed')
 procbatch=widget_button(base,value='Proceed to multiple subject selection')
-smsel=cw_field(base,title='Smoothing kernel',/all_events,/float,value=sk)
-encs=cw_bgroup(base,'Use Enclosing voxel interpolation',/nonexclusive,set_value=enc)
+mvals=cw_bgroup(base,'Fill in missing values',/nonexclusive,set_value=mval)
 quit=widget_button(base,value='Quit')
 resp=widget_event(base,/nowait)
 widget_control,base,/realize
-while min(abs([proceed,procbatch]-resp.id)) ne 0 or sk lt 0 do begin
+while min(abs([proceed,procbatch]-resp.id)) ne 0 do begin
 resp=widget_event(base)
-if resp.id eq smsel then sk=resp.value
-if min(abs([proceed,procbatch]-resp.id)) eq 0 then if sk lt 0 then print,'Smoothing kernel must be bigger than 0'
-if resp.id eq encs then enc=resp.select
+if resp.id eq mvals then mval=resp.select
 if resp.id eq procbatch then bstart=1 else bstart=0
 if resp.id eq quit then begin
 widget_control,base,/destroy
@@ -151,8 +42,6 @@ return
 end
 end
 widget_control,base,/destroy
-flag='--'+methods(method)+' '+val1+val2+val3
-if sk ne 0 then flag=flag+' --surf-fwhm '+trim(sk)
 if bstart eq 1 then begin
 apfiles=''
 print,'Searching for subjects with the same Cgrid-files'
@@ -210,10 +99,10 @@ if tag_exist(filestruct,strupcase(subtags(subnr))) then struct_delete_field,file
 for i=0,nrfiles(subnr)-1 do begin
 if i eq 0 then niifiles=''
 niifile=''
-while min(strpos(file_basename(niifile),'.nii')) eq -1 or min(file_test(niifile)) eq 0 do begin
-niifile=dialog_pickfile(/read,filter='*.nii',path=curdir(0),/multiple_files,title='Please select the nifti file(s) '+trim(i+1)+'/'+trim(nrfiles(subnr)))
+while min(strpos(file_basename(niifile),'.mgh')) eq -1 or min(file_test(niifile)) eq 0 do begin
+niifile=dialog_pickfile(/read,filter='*.mgh',path=curdir(0),/multiple_files,title='Please select the nifti file(s) '+trim(i+1)+'/'+trim(nrfiles(subnr)))
 if min(file_test(niifile)) eq 0 then print,'Not all selected files exist.'
-if min(strpos(file_basename(niifile),'.nii')) eq -1 then print,'Not all selected files are nifti files.'
+if min(strpos(file_basename(niifile),'.mgh')) eq -1 then print,'Not all selected files are mgh files.'
 end
 curdir=file_dirname(niifile)
 niifiles=[niifiles,niifile]
@@ -228,7 +117,7 @@ nrtags=n_elements(tags)
 if nrtags ne 1 then for i=1,nrtags-1 do begin
 subcode=subs(where(strupcase(subtags) eq tags(i)))
 tmpcgridfiles=strarr(nrgrids)+fsdir(0)+'/'+subcode(0)+'/surf/'+file_basename(cgridfiles)
-vol2cgrid,filestruct.(i),tmpcgridfiles,flag=flag,enc=enc
+mgh2cgrid,filestruct.(i),tmpcgridfiles,mval=mval
 end
 print,'Finished'
 end

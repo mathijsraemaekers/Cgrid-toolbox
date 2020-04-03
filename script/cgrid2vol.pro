@@ -29,6 +29,7 @@ label2volyc='mri_label2vol --subject '+subcode+' --temp '+mridir+'T1.mgz --o '+o
 labelfiles=''
 cgrid=read_ascii(cgridfile)
 cgrid=cgrid.(0)
+cgrid(1:2,*)=ceil(cgrid(1:2,*))
 xdim=max(cgrid(1,*))
 ydim=max(cgrid(2,*))
 surf=read_fs_surface(surfdir+hem+'.white')

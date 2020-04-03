@@ -64,18 +64,14 @@ nrxcor=pxrange(1)-pxrange(0)+1
 pxcors=double(findgen(nrxcor)/10.+pxrange(0)/10.)
 pxlines=dblarr(vstep+1,nrxcor)
 for i=0,vstep do for j=0,tmpporder do pxlines(i,*)=pxlines(i,*)+pxcors^j*pmatrix1(j,i)
-cgrid=lonarr(3,nrcor)
+cgrid=dblarr(3,nrcor)
 cgrid(0,*)=patch(0,*)
-ytest=dblarr(vstep+1,nrcor)
-for i=0,vstep do for j=0,tmpporder do ytest(i,*)=ytest(i,*)+patch(1,*)^j*pmatrix1(j,i)
-for i=0,vstep do ytest(i,*)=patch(2,*)-ytest(i,*)
-ytest=reverse(ytest,1)
-ytest(where(ytest lt 0))=!VALUES.F_NAN
-ymv=min(ytest,ymin,dimension=1,/NAN)
-tmp=array_indices(ytest,ymin)
-tmp=tmp(0,*)
-cginc=where(finite(ymv) eq 1 and tmp ne vstep)
-cgrid(2,cginc)=tmp(cginc)+1 
+ytest=dblarr(2,nrcor)
+for i=0,1 do for j=0,tmpporder do ytest(i,*)=ytest(i,*)+patch(1,*)^j*pmatrix1(j,i*vstep)
+ytest=(patch(2,*)-ytest(1,*))/(ytest(0,*)-ytest(1,*))
+cginc=where(ytest ge 0 and ytest le 1)
+ytest=ytest*vstep
+cgrid(2,cginc)=ytest(cginc)
 cgrid(2,where(tpatch(0,opatch(0,*)) lt txrange(0)))=0
 cgrid(2,where(tpatch(0,opatch(0,*)) gt txrange(1)))=0
 ypatch=rotate_fs_patch(opatch,rbor,lbor,ubor,dbor,rotmat=rotmat2,my=[rmy,lmy,umy,dmy])
@@ -105,16 +101,12 @@ tmplines(hstep+1:*,*)=pylines
 for i=0,hstep do tmplines([i,i+hstep+1],*)=transpose(transpose(tmplines([i,i+hstep+1],*))#invert(rotmat2)#rotmat1)
 pycors=tmplines(0:hstep,*)
 pylines=tmplines(hstep+1:*,*)
-xtest=dblarr(hstep+1,nrcor)
-for i=0,hstep do for j=0,tmpporder do xtest(i,*)=xtest(i,*)+ypatch(1,*)^j*pmatrix2(j,i)
-for i=0,hstep do xtest(i,*)=ypatch(2,*)-xtest(i,*)
-xtest=reverse(xtest,1)
-xtest(where(xtest lt 0))=!VALUES.F_NAN
-xmv=min(xtest,xmin,dimension=1,/NAN)
-tmp=array_indices(xtest,xmin)
-tmp=tmp(0,*)
-cginc=where(finite(xmv) eq 1 and tmp ne hstep)
-cgrid(1,cginc)=tmp(cginc)+1 
+xtest=dblarr(2,nrcor)
+for i=0,1 do for j=0,tmpporder do xtest(i,*)=xtest(i,*)+ypatch(1,*)^j*pmatrix2(j,i*hstep)
+xtest=(ypatch(2,*)-xtest(1,*))/(xtest(0,*)-xtest(1,*))
+cginc=where(xtest ge 0 and xtest le 1)
+xtest=xtest*hstep
+cgrid(1,cginc)=xtest(cginc)
 cgrid(1,where(tpatch(0,opatch(0,*)) lt txrange(0)))=0
 cgrid(1,where(tpatch(0,opatch(0,*)) gt txrange(1)))=0
 cgridinc=where(cgrid(1,*)*cgrid(2,*) ne 0)

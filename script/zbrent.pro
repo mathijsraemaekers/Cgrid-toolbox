@@ -1,4 +1,4 @@
-function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
+function ZBRENT, x1, x2, FUNC_NAME=func_name,    $
                          MAX_ITERATIONS=maxit, TOLERANCE=TOL
 ;+
 ; NAME:
@@ -11,8 +11,7 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
 ;     Press et al. (1992), Section 9.3
 ;
 ; CALLING:
-;       x_zero = ZBRENT( x1, x2, FUNC_NAME="name", MaX_Iter=, Tolerance=, 
-;                                 _EXTRA =  )
+;       x_zero = ZBRENT( x1, x2, FUNC_NAME="name", MaX_Iter=, Tolerance= )
 ;
 ; INPUTS:
 ;       x1, x2 = scalars, 2 points which bracket location of function zero,
@@ -31,8 +30,6 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
 ;       MAX_ITER = maximum allowed number iterations, default=100.
 ;       TOLERANCE = desired accuracy of minimum location, default = 1.e-3.
 ;
-;       Any other keywords are passed directly to the user-supplied function
-;       via the _EXTRA facility.
 ; OUTPUTS:
 ;       Returns the location of zero, with accuracy of specified tolerance.
 ;
@@ -49,18 +46,15 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
 ; MODIFICATION HISTORY:
 ;       Written, Frank Varosi NASA/GSFC 1992.
 ;       FV.1994, mod to check for single/double prec. and set zeps accordingly.
+;       Converted to IDL V5.0   W. Landsman   September 1997
 ;       Use MACHAR() to define machine precision   W. Landsman September 2002
-;       Added _EXTRA keyword  W. Landsman  December 2011
-;       Need to check whether user function accepts keywords W.L. Jan 2012
 ;-
-        compile_opt idl2
         if N_params() LT 2 then begin
              print,'Syntax - result = ZBRENT( x1, x2, FUNC_NAME = ,'
-             print,'                  [ MAX_ITER = , TOLERANCE = , _EXTRA=])'
+             print,'                  [ MAX_ITER = , TOLERANCE = ])'
              return, -1
         endif
 
-        kpresent = keyword_set(_EXTRA)
         if N_elements( TOL ) NE 1 then TOL = 1.e-3
         if N_elements( maxit ) NE 1 then maxit = 100
 
@@ -73,14 +67,9 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
                 xb = x2
                 zeps = (machar(/DOUBLE)).eps   ;machine epsilon, in single 
            endelse
-        
-	if kpresent then begin 
-          fa = call_function( func_name, xa, _EXTRA = _extra )
-          fb = call_function( func_name, xb, _EXTRA = _extra )
-        endif else begin 
-          fa = call_function( func_name, xa )
-          fb = call_function( func_name, xb )
-	endelse
+
+        fa = call_function( func_name, xa )
+        fb = call_function( func_name, xb )
         fc = fb
 
         if (fb*fa GT 0) then begin
@@ -105,9 +94,9 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
                 TOL1 = 0.5*TOL + 2*abs( xb ) * zeps     ;Convergence check
                 xm = (xc - xb)/2.
 
-                if (abs( xm ) LE TOL1) || (fb EQ 0) then return,xb
+                if (abs( xm ) LE TOL1) OR (fb EQ 0) then return,xb
 
-                if (abs( Dold ) GE TOL1) && (abs( fa ) GT abs( fb )) then begin
+                if (abs( Dold ) GE TOL1) AND (abs( fa ) GT abs( fb )) then begin
 
                         S = fb/fa       ;attempt inverse quadratic interpolation
 
@@ -145,10 +134,7 @@ function ZBRENT, x1, x2, FUNC_NAME=func_name, _EXTRA = _extra,   $
                 if (abs( Din ) GT TOL1) then xb = xb + Din $
                                         else xb = xb + TOL1 * (1-2*(xm LT 0))
 
-                if kpresent then $
-                   fb = call_function( func_name, xb, _EXTRA = _extra ) else $
-                   fb = call_function( func_name, xb )
-		   
+                fb = call_function( func_name, xb )
           endfor
 
         message,"exceeded maximum number of iterations: "+strtrim(iter,2),/INFO

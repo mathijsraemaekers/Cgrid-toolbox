@@ -1,4 +1,4 @@
-pro surfdat2cgrid_widget
+function cgrid_angular_distortion
 spawn,'echo $SUBJECTS_DIR',fsdir
 opdir=''
 surfdats=['volume','thickness','sulc']
@@ -31,7 +31,7 @@ surfdir=fsdir+'/'+subcode+'/surf/'
 base=widget_base(/row,title='Select which data to map to Cgrid')
 proceed=widget_button(base,value='Proceed')
 procbatch=widget_button(base,value='Proceed to multiple subject selection')
-surfdats=['vertices','thickness','sulc','curv','curv.pial','avg_curv','volume','area','area.mid','area.pial','flat_position','pial_position','white_position','inflated_position','angdist_vs_flat','angdist_vs_inflated']
+surfdats=['vertices','thickness','sulc','curv','curv.pial','avg_curv','volume','area','area.mid','area.pial','flat_position','pial_position','white_position','inflated_position']
 nsuft=n_elements(surfdats)
 signrev=intarr(nsuft)
 surftest=intarr(nsuft)
@@ -127,23 +127,22 @@ inc=where(floor(cgrid(1,*)) eq k and floor(cgrid(2,*)) eq l,/NULL)
 if inc ne !NULL then nrverts(k,l,sind)=n_elements(inc)
 end
 if mval(0) eq 0 then begin
-;topo=(read_fs_surface(surfdir+hem+'.pial')).topology
-;topotest=bytarr(max(topo)+1)
-;topotest(cgrid(0,*))=1
-;tinc=bytarr(3,n_elements(topo)/3)
-;for k=0,2 do tinc(k,*)=topotest(topo(k,*))
-;topo=topo(*,where(total(tinc,1) eq 3))
-;atopo=topo*0
-;for k=0,n_elements(cgrid(0,*))-1 do atopo(where(topo eq cgrid(0,k)))=k+1
-;atopo=atopo(*,where(min(atopo,dimension=1) ne 0,/NULL))-1
-triangulate,cgrid(1,*),cgrid(2,*),atopo
+topo=(read_fs_surface(surfdir+hem+'.pial')).topology
+topotest=bytarr(max(topo)+1)
+topotest(cgrid(0,*))=1
+tinc=bytarr(3,n_elements(topo)/3)
+for k=0,2 do tinc(k,*)=topotest(topo(k,*))
+topo=topo(*,where(total(tinc,1) eq 3))
+atopo=topo*0
+for k=0,n_elements(cgrid(0,*))-1 do atopo(where(topo eq cgrid(0,k)))=k+1
+atopo=atopo(*,where(min(atopo,dimension=1) ne 0,/NULL))-1
 tmpval=trigrid(cgrid(1,*),cgrid(2,*),intarr(n_elements(cgrid(0,*)))+1,atopo,nx=xdim+2,ny=ydim+2)
 misval(*,*,sind)=round(tmpval(1:xdim,1:ydim))
 if j eq 0 then atopos=create_struct(patchcode+'_'+trim(j),atopo) else atopos=create_struct(atopos,patchcode+'_'+trim(j+1),atopo)
 end else misval(*,*,j)=nrverts(*,*,j)
 end
 misval(where(misval gt 1,/NULL))=1
-for i=1,9 do if surftest(i) eq 1 then begin
+for i=1,nsuft-5 do if surftest(i) eq 1 then begin
 opdat=fltarr(xdim,ydim,2)
 for j=0,nrcgridfiles-1 do begin
 cgrid=cgrids.(j)
@@ -181,17 +180,16 @@ print,'Writing file '+ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(0)+'.nii'
 niihdrtool,ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(0)+'.nii',fdata=nrverts,srow_x4=-xdim/2.+0.5,srow_y4=-ydim/2.+0.5,srow_z4=-0.5
 print,'Done'
 end
-
-for i=10,15 do if surftest(i) eq 1 then begin
+for i=10,13 do if surftest(i) eq 1 then begin
 flatloc=fltarr(xdim,ydim,2,3)+!VALUES.F_NAN
 for j=0,nrcgridfiles-1 do begin
 cgrid=cgrids.(j)
 hem=strmid(file_basename(tmpcgridfiles(j)),0,2)
 sind=where(hems eq hem)
-if i eq 10 or i eq 14 then patchdat=read_fs_patch(surfdir+hem+'.'+patchcode+'_flat.3d')
+if i eq 10 then patchdat=read_fs_patch(surfdir+hem+'.'+patchcode+'_flat.3d')
 if i eq 11 then patchdat=(read_fs_surface(surfdir+hem+'.pial')).coordinates
 if i eq 12 then patchdat=(read_fs_surface(surfdir+hem+'.white')).coordinates
-if i eq 13 or i eq 15 then patchdat=(read_fs_surface(surfdir+hem+'.inflated')).coordinates
+if i eq 13 then patchdat=(read_fs_surface(surfdir+hem+'.inflated')).coordinates
 tmppatchdat=fltarr(3,max(patchdat(0,*))+1)
 tmppatchdat(*,patchdat(0,*))=patchdat(1:3,*)
 for k=0,xdim-1 do for l=0,ydim-1 do begin
@@ -203,36 +201,9 @@ flatloc(k,l,sind,2)=mean(tmppatchdat(2,cgrid(0,inc)))
 end
 end
 end
-if i lt 14 then begin
 print,'Writing file '+ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(i)+'.nii'
 niihdrtool,ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(i)+'.nii',fdata=flatloc,srow_x4=-xdim/2.+0.5,srow_y4=-ydim/2.+0.5,srow_z4=-0.5
 print,'Done'
-end
-if i ge 14 then if surftest(i) eq 1 then begin
-sflatloc=size(reform(flatloc(*,*,*,0)),/dimensions)
-op=fltarr([sflatloc,4])
-vecmat=fltarr([sflatloc,3,4])
-vecmat(*,*,*,*,0)=shift(flatloc,1,0,0,0)-flatloc
-vecmat(*,*,*,*,1)=shift(flatloc,-1,0,0,0)-flatloc
-vecmat(*,*,*,*,2)=shift(flatloc,0,1,0,0)-flatloc
-vecmat(*,*,*,*,3)=shift(flatloc,0,-1,0,0)-flatloc
-vecmat(sflatloc(0)-1,*,*,*,1)=!VALUES.F_NAN
-vecmat(0,*,*,*,0)=!VALUES.F_NAN
-vecmat(*,sflatloc(1)-1,*,*,3)=!VALUES.F_NAN
-vecmat(*,0,*,*,2)=!VALUES.F_NAN
-vecs1=transpose(reform(vecmat(*,*,*,*,0),product(sflatloc(0:2)),3))
-vecs2=transpose(reform(vecmat(*,*,*,*,1),product(sflatloc(0:2)),3))
-vecs3=transpose(reform(vecmat(*,*,*,*,2),product(sflatloc(0:2)),3))
-vecs4=transpose(reform(vecmat(*,*,*,*,3),product(sflatloc(0:2)),3))
-op(*,*,*,0)=angle_between_two_vectors(vecs1,vecs3)/(2*!PI)*360.-90
-op(*,*,*,1)=angle_between_two_vectors(vecs1,vecs4)/(2*!PI)*360.-90
-op(*,*,*,2)=angle_between_two_vectors(vecs2,vecs3)/(2*!PI)*360.-90
-op(*,*,*,3)=angle_between_two_vectors(vecs2,vecs4)/(2*!PI)*360.-90
-op=sqrt(total(op^2,4,/NAN)/total(finite(op),4))
-print,'Writing file '+ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(i)+'.nii'
-niihdrtool,ropdir+subcode+'_cgrid_'+patchcode+'_'+surfdats(i)+'.nii',fdata=op,srow_x4=-xdim/2.+0.5,srow_y4=-ydim/2.+0.5,srow_z4=-0.5
-print,'Done'
-end
 end
 end
 print,'Finished'

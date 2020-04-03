@@ -1,9 +1,11 @@
 pro gen_fs_patch_widget
 spawn,'echo $SUBJECTS_DIR',fsdir
 spawn,'echo $HOME',homedir
+surfs=['inflated','sphere','sphere.reg','very_inflated']
 hems=['lh','rh']
 hemtest=[1,1]
 pictsel=0
+surf=surfs(0)
 fssubs=file_basename(file_search(fsdir+'/*',/test_directory))
 nrsub=n_elements(fssubs)
 subtest=intarr(nrsub)
@@ -28,12 +30,14 @@ subtest(where(fssubs eq subcode))=1
 widget_control,base,/destroy
 annots=replace(replace(file_basename(file_search(labeldir+'lh.*.annot')),'lh.',''),'.annot','')
 atest=where(annots eq 'aparc',/NULL)
+stest=0
 pvolume=annots(atest)
 if atest eq !NULL then atest=0
 base=widget_base(/row,title='Select Hemispheres(s) and Annotation Scheme',xsize=450)
 proceed=widget_button(base,value='Proceed')
 hemsel=cw_bgroup(base,hems,/column,/nonexclusive,label_top='Hemisphere',set_value=hemtest)
 annotsel=cw_bgroup(base,annots,/column,/exclusive,label_top='Annotation scheme',set_value=atest)
+surfsel=cw_bgroup(base,surfs,/column,/exclusive,label_top='Surface',set_value=stest)
 quit=widget_button(base,value='Quit')
 resp=widget_event(base,/nowait)
 widget_control,base,/realize
@@ -41,6 +45,7 @@ while resp.id ne proceed or total(hemtest) eq 0 do begin
 if resp.id eq proceed and total(hemtest) eq 0 then print,'No hemispheres selected. Choose at least one hemisphere.'
 resp=widget_event(base)
 if resp.id eq annotsel then pvolume=annots(resp.value)
+if resp.id eq surfsel then surf=surfs(resp.value)
 if resp.id eq hemsel then hemtest(resp.value)=resp.select
 if resp.id eq quit then begin
 widget_control,base,/destroy
@@ -115,7 +120,9 @@ hem=hems(j)
 outputfile=fsdir+'/'+subcode+'/surf/'+hem+'.'+outputprefix+'.3d'
 flat_outputfile=fsdir+'/'+subcode+'/surf/'+hem+'.'+outputprefix+'_flat.3d'
 tmppaints=read_fs_annotation(subcode,hem,pvolume,plegend=plegend)
-fssurface=read_fs_surface(surfdir+hem+'.inflated')
+if surf eq 'very_inflated' then if not file_test(surfdir+hem+'.very_inflated') then spawn,'mris_inflate '+surfdir+hem+'.inflated '+surfdir+hem+'.very_inflated'
+fssurface=read_fs_surface(surfdir+hem+'.'+surf)
+print,'Extracting patch from '+surfdir+hem+'.'+surf
 nrpaints=n_elements(plabels)
 paintnrs=intarr(nrpaints)
 for i=0,nrpaints-1 do paintnrs(i)=fix(plegend(0,where(plegend(1,*) eq plabels(i))))

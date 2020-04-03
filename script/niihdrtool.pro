@@ -14,13 +14,11 @@ print,'The title of every nifti field you see when using /disp_hdr can be set as
 return
 end
 if keyword_set(fdata) then nwdata=1 else nwdata=0
-
 fileinfo=file_info(filename)
 filesize=fileinfo.size
 if filesize eq 0 then if keyword_set(hdrfile) eq 0 then tmpfilename='test'
 if keyword_set(hdrfile) then tmpfilename=hdrfile
 if filesize gt 0 then if keyword_set(hdrfile) eq 0 then tmpfilename=filename
-
 if strpos(tmpfilename,'.gz') eq -1 then begin
 if filesize ne 0 or keyword_set(hdrfile) then begin
 filedat=bytarr(348)
@@ -35,10 +33,9 @@ tmphdr=hdr
 end
 end else begin
 file_gunzip,tmpfilename,buffer=alldat
-hdr=alldat(0:float(alldat,108,1))
+hdr=alldat(0:float(alldat,108,1)-1)
 tmphdr=hdr
 end
-
 if keyword_set(fdata) then begin
 datinfo=size(fdata,/dimensions)
 dim1=n_elements(datinfo)
@@ -192,7 +189,6 @@ if n_elements(intent_name) ne 0 then intent_name=[byte(intent_name),bytarr(hdrin
 if n_elements(intent_name) ne 0 then hdr(hdrinfovals(2,57):hdrinfovals(2,57)+hdrinfovals(3,57)-1)=intent_name(0:hdrinfovals(3,57)-1)
 if n_elements(magic) ne 0 then magic=[byte(magic),bytarr(hdrinfovals(3,58))]
 if n_elements(magic) ne 0 then hdr(hdrinfovals(2,58):hdrinfovals(2,58)+hdrinfovals(3,58)-1)=magic(0:hdrinfovals(3,58)-1)
-
 ints=where(hdrinfo(1,*) eq 'int')
 floats=where(hdrinfo(1,*) eq 'float')
 chars=where(hdrinfo(1,*) eq 'char')
@@ -396,12 +392,7 @@ if nwdata eq 0 then if max(abs(tmphdr-hdr)) ne 0 then begin
 openu,unit,filename
 writeu,unit,hdr
 end
-end else begin
-
-
 end
 close,unit
 free_lun,unit
 end
-
-

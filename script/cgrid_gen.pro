@@ -94,24 +94,20 @@ end
 xbound=fltarr(vstep,2)
 for i=0,vstep-1 do xbound(i,*)=[min(gcors(0,i:i+1)),max(gcors(hstep,i:i+1))]
 xbound=reverse(xbound,1)
-cgrid=lonarr(3,nrcor)
+cgrid=dblarr(3,nrcor)
 cgrid(0,*)=patch(0,*)
-ytest=dblarr(vstep+1,nrcor)
-for i=0,vstep do for j=0,tmpporder do ytest(i,*)=ytest(i,*)+patch(1,*)^j*pmatrix(j,i)
-for i=0,vstep do ytest(i,*)=patch(2,*)-ytest(i,*)
-ytest=reverse(ytest,1)
-ytest(where(ytest lt 0))=!VALUES.F_NAN
-ymv=min(ytest,ymin,dimension=1,/NAN)
-tmp=array_indices(ytest,ymin)
-tmp=tmp(0,*)
-cginc=where(finite(ymv) eq 1 and tmp ne vstep)
-cgrid(2,cginc)=tmp(cginc)+1 
+ytest=dblarr(2,nrcor)
+for i=0,1 do for j=0,tmpporder do ytest(i,*)=ytest(i,*)+patch(1,*)^j*pmatrix(j,i*vstep)
+ytest=(patch(2,*)-ytest(1,*))/(ytest(0,*)-ytest(1,*))
+cginc=where(ytest ge 0 and ytest le 1)
+ytest=ytest*vstep
+cgrid(2,cginc)=ytest(cginc)
 rcs=(gcors(*,1:*,1)-gcors(*,0:vstep-1,1))/(gcors(*,1:*,0)-gcors(*,0:vstep-1,0))
 rcs(where(finite(rcs) eq 0))=100000.
 bs=gcors(*,0:vstep-1,1)-rcs*gcors(*,0:vstep-1,0)
 xtest=fltarr(hstep+1,nrcor)
 for j=0,vstep-1 do begin
-inc=where(cgrid(2,*) eq vstep-j)
+inc=where(ceil(cgrid(2,*)) eq vstep-j)
 for i=0,hstep do begin
 xtest(i,inc)=patch(1,inc)-(patch(2,inc)-bs(i,j))/rcs(i,j)
 end
@@ -120,8 +116,12 @@ xtest(where(xtest lt 0 or finite(xtest) eq 0))=!VALUES.F_NAN
 xmv=min(xtest,xmin,dimension=1,/NAN)
 tmp=array_indices(xtest,xmin)
 tmp=tmp(0,*)
-cginc=where(finite(xmv) eq 1 and tmp ne hstep)
-cgrid(1,cginc)=tmp(cginc)+1
+tmpgcors=reverse(gcors,2)
+rat1=min_dists(patch(1,*),patch(2,*),tmpgcors(tmp,floor(ytest),intarr(nrcor)),tmpgcors(tmp,floor(ytest)+1,intarr(nrcor)),tmpgcors(tmp,floor(ytest),intarr(nrcor)+1),tmpgcors(tmp,floor(ytest)+1,intarr(nrcor)+1))
+rat2=min_dists(patch(1,*),patch(2,*),tmpgcors(tmp+1,floor(ytest),intarr(nrcor)),tmpgcors(tmp+1,floor(ytest)+1,intarr(nrcor)),tmpgcors(tmp+1,floor(ytest),intarr(nrcor)+1),tmpgcors(tmp+1,floor(ytest)+1,intarr(nrcor)+1))
+tmp=double(tmp)+rat1/(rat1+rat2)
+cginc=where(finite(xmv) eq 1 and tmp le hstep)
+cgrid(1,cginc)=tmp(cginc)
 cgrid(1,where(patch(1,*)-xbound(cgrid(2,*)-1,0) le 0 or patch(1,*)-xbound(cgrid(2,*)-1,1) ge 0))=0
 cgridinc=where(cgrid(1,*)*cgrid(2,*) ne 0)
 cgridinc=where(cgrid(1,*)*cgrid(2,*) ne 0)

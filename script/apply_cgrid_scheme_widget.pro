@@ -206,8 +206,8 @@ treport=[treport,'subgrid-'+trim(i+1)+'-'+hem+' mean fit quality:'+trim(qual(0))
 treport=[treport,'subgrid-'+trim(i+1)+'-'+hem+' worst fit quality:'+trim(qual(1))]
 if max(tmpcgrid) ne 0 then begin
 tmpcgrid(2,*)=tmpcgrid(2,*)+yadds(i)
-if xinv eq 'no' then if hem eq 'rh' then tmpcgrid(1,*)=tmpcgrid(1,*)*(-1)+xdim+1
-if xinv eq 'yes' then if hem eq 'lh' then tmpcgrid(1,*)=tmpcgrid(1,*)*(-1)+xdim+1
+if xinv eq 'no' then if hem eq 'rh' then tmpcgrid(1,*)=tmpcgrid(1,*)*(-1)+xdim
+if xinv eq 'yes' then if hem eq 'lh' then tmpcgrid(1,*)=tmpcgrid(1,*)*(-1)+xdim
 cgrid=[[cgrid],[tmpcgrid]]
 end
 end
